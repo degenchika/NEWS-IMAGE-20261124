@@ -57,7 +57,10 @@ function checkImage(bytes: Buffer): void {
 
 // Write the image atomically: bytes first go to a temporary file in
 // the same folder, then are renamed over the target, so a reader
-// never catches a half-written entry.png.
+// never catches a half-written entry.png. The rename stays on the
+// same filesystem, so it is a single atomic step, and verifyPublished
+// below re-reads the published copy and compares it byte for byte
+// with the source, so both harness runs must produce identical bytes.
 function publishImage(bytes: Buffer, dir: string): string {
   mkdirSync(dir, { recursive: true });
   const target = join(dir, "entry.png");
